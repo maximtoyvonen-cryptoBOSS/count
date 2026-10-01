@@ -7,6 +7,9 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
+
+        count = Preferences.Get("counter_value", 0);
+        UpdateCounterLabel();
     }
 
     private void OnIncrementClicked(object sender, EventArgs e)
@@ -29,6 +32,7 @@ public partial class MainPage : ContentPage
 
     private void UpdateCounterLabel()
     {
+        Preferences.Set("counter_value", count);
         CounterLabel.Text = count.ToString();
         SemanticScreenReader.Announce(CounterLabel.Text);
     }
