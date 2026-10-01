@@ -7,6 +7,16 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
+
+        count = Preferences.Get("counter_value", 0);
+        UpdateCounterLabel();
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        count = Preferences.Get("counter_value", 0);
+        CounterLabel.Text = count.ToString();
     }
 
     private void OnIncrementClicked(object sender, EventArgs e)
@@ -29,7 +39,19 @@ public partial class MainPage : ContentPage
 
     private void UpdateCounterLabel()
     {
+        Preferences.Set("counter_value", count);
         CounterLabel.Text = count.ToString();
         SemanticScreenReader.Announce(CounterLabel.Text);
+        UpdateAndroidWidget();
+    }
+
+    private void UpdateAndroidWidget()
+    {
+#if ANDROID
+        var context = Android.App.Application.Context;
+        var intent = new Android.Content.Intent(context, typeof(CounterWidgetProvider));
+        intent.SetAction(CounterWidgetProvider.ACTION_UPDATE);
+        context.SendBroadcast(intent);
+#endif
     }
 }
